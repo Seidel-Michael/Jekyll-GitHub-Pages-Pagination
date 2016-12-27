@@ -1,4 +1,4 @@
 ---
 layout: blog-index
-index: 5
+index: 1
 ---

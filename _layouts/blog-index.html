@@ -1,25 +1,72 @@
----
-layout: default
----
+--- 
+layout: default 
+--- 
+
+<!-- Variables -->
+{% assign index_real = page.index | minus:1 %} 
+{% assign posts_count = site.posts.size %} 
+{% assign mod_pag = posts_count | modulo:site.paginate %} 
+{% assign pages_count = posts_count | divided_by:site.paginate | plus:mod_pag %} 
+{% assign OFFSET = site.paginate | times:index_real %}
+
 
 <div class="home">
-
   <h1 class="page-heading">Posts</h1>
-  
   {{ content }}
-
+  
   <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-
-        <h2>
-          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-        </h2>
-      </li>
+    {% for post in site.posts limit:site.paginate offset:OFFSET %}
+    <li>
+      <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+      <h2>
+        <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+      </h2>
+    </li>
     {% endfor %}
   </ul>
 
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+  <style>
+    ul.pagination {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+    }
+    
+    ul.pagination li {
+      display: inline;
+      padding: 2px 5px 0;
+      text-align: left;
+    }
+    
+    ul.pagination li a {
+      padding: 2px;
+    }
+  </style>
 
+  <ul class="pagination">
+    {% if page.index > 1 %}
+      <li><strong><a href="{{ site.baseurl }}{{ site.blogbaseurl }}/1" title="Start">Start</a></strong></li>
+      <li><strong><a href="{{ site.baseurl }}{{ site.blogbaseurl }}/{{ page.index | minus:1 }}" title="Start">Prev</a></strong></li>
+    {% else %}
+      <li>Start</li>
+      <li>Prev</li>
+    {% endif %} 
+    
+    {% for pageNum in (1..pages_count) %} 
+      {% if page.index == pageNum %}
+        <li>{{ pageNum }}</li>
+      {% else %}
+        <li><strong><a href="{{ site.baseurl }}{{ site.blogbaseurl }}/{{ pageNum }}" title="{{ pageNum }}">{{ pageNum }}</a></strong></li>
+      {% endif %} 
+    {% endfor %} 
+    
+    {% if pages_count != page.index %}
+      <li><strong><a href="{{ site.baseurl }}{{ site.blogbaseurl }}/{{ page.index | plus:1 }}" title="Next">Next</a></strong></li>
+      <li><strong><a href="{{ site.baseurl }}{{ site.blogbaseurl }}/{{ pages_count }}" title="End">End</a></strong> 
+    {% else %}
+      <li>Next</li>
+      <li>End</li>
+    {% endif %}
+  </ul>
 </div>
